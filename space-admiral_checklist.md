@@ -5,11 +5,11 @@ This checklist outlines the development phases for building the Planet Hopper pr
 ---
 
 ## ✅ Phase 1: Setup & Core Mechanics
-- [ ] Set up project folder and version control (e.g., GitHub)
-- [ ] Create full-screen canvas and responsive layout
+- [x] Set up project folder and version control (e.g., GitHub)
+- [x] Create full-screen canvas and responsive layout
 - [ ] Implement gravity-based physics for planets and rockets
-- [ ] Add click-drag launch mechanic with velocity preview
-- [ ] Simulate orbit prediction with dashed lines
+- [x] Add click-drag launch mechanic with velocity preview
+- [x] Simulate orbit prediction with dashed lines
 - [ ] Add multiple planets with mass-based gravity
 
 ---
