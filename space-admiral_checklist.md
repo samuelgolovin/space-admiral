@@ -8,10 +8,9 @@ This checklist outlines the development phases for building the Planet Hopper pr
 - [x] Set up project folder and version control (e.g., GitHub)
 - [x] Create full-screen canvas and responsive layout
 - [x] Implement gravity-based physics for planets and rockets
-- [ ] Add click-drag launch mechanic with velocity preview
 - [x] Simulate orbit prediction with dashed lines
 - [x] Add multiple planets with mass-based gravity
-- [ ] Create a zoom and panning capability
+- [x] Create a zoom and panning capability
 
 ---
 
@@ -41,6 +40,7 @@ This checklist outlines the development phases for building the Planet Hopper pr
 ---
 
 ## 🧪 Phase 5: UI, Feedback & Polish
+- [ ] Optimize orbitPathSimulate, only calc path it changes direction
 - [ ] Add UI for resources, fuel, and ship stats
 - [ ] Add buttons: launch, reset, toggle tech tree
 - [ ] Add basic sound effects and background music

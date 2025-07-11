@@ -124,11 +124,69 @@ function drawDebugOverlay() {
 }
 
 
+let camera = {
+    x: 0,
+    y: 0,
+    zoom: 1
+};
+
+let isDragging = false
+let lastMouse = { x: 0, y: 0 };
+
+//Handle zooming
+canvas.addEventListener('wheel', e => {
+    e.preventDefault(); //Prevent page scroll
+    const zoomFactor = 1.1;
+    const mouseX = e.offsetX;
+    const mouseY = e.offsetY;
+
+    const worldX = (mouseX / camera.zoom) + camera.x;
+    const worldY = (mouseY / camera.zoom) + camera.y;
+
+    // adjust zoom level
+    if (e.deltaY < 0) {
+        camera.zoom *= zoomFactor; //zoom in
+    } else {
+        camera.zoom /= zoomFactor; //zoom out
+    }
+
+    //adjust camera position to zoom toward the mouse pointer
+    camera.x = worldX - (mouseX / camera.zoom);
+    camera.y = worldY - (mouseY / camera.zoom);
+});
+
+//handle panning
+canvas.addEventListener('mousedown', e => {
+    isDragging = true;
+    lastMouse = { x: e.clientX, y: e.clientY };
+});
+
+canvas.addEventListener('mousemove', e => {
+    if (isDragging) {
+        const dx = (e.clientX - lastMouse.x) / camera.zoom;
+        const dy = (e.clientY - lastMouse.y) / camera.zoom;
+
+        camera.x -= dx;
+        camera.y -= dy;
+
+        lastMouse = { x: e.clientX, y: e.clientY };
+    }
+});
+
+canvas.addEventListener('mouseup', () => isDragging = false);
+canvas.addEventListener('mouseleave', () => isDragging = false);
+
 
 const planets = [
-    { x: 300, y: 400, radius: 60, gravity: 200 },
-    { x: 800, y: 200, radius: 80, gravity: 150 },
-    { x: 1200, y: 600, radius: 100, gravity: 100 }
+    { x: 300, y: 400, radius: 60, gravity: 120 },
+    { x: 800, y: 200, radius: 80, gravity: 160 },
+    { x: 1200, y: 600, radius: 100, gravity: 200 },
+    { x: -200, y: 350, radius: 200, gravity: 400 },
+    { x: -600, y: -400, radius: 80, gravity: 160 },
+    { x: -1500, y: 400, radius: 100, gravity: 200 },
+    { x: 400, y: 2000, radius: 80, gravity: 160 },
+    { x: 1500, y: 1000, radius: 60, gravity: 120 },
+    { x: 900, y: 1700, radius: 40, gravity: 80 },
 ];
 
 function drawPlanets() {
@@ -148,12 +206,13 @@ const rocket = {
     angle: 0,
     vx: 0,
     vy: 0,
-    thrust: 0.01,
+    thrust: 0.02,
     rotationSpeed: 0.02,
     width: 20,
     height: 40,
     crashed: false,
-    landed: false
+    landed: false,
+    takeoff: false
 };
 
 const keys = {
@@ -169,8 +228,14 @@ function update() {
     if (rocket.landed) {
         if (keys.ArrowUp) {
             rocket.landed = false;
-            rocket.vx += Math.cos(rocket.angle - Math.PI / 2) * rocket.thrust;
-            rocket.vy += Math.sin(rocket.angle - Math.PI / 2) * rocket.thrust;
+
+            const offset = 1;
+            rocket.x += Math.cos(rocket.angle - Math.PI / 2) * offset;
+            rocket.y += Math.sin(rocket.angle - Math.PI / 2) * offset;
+
+            const launchBoost = 25;
+            rocket.vx += Math.cos(rocket.angle - Math.PI / 2) * rocket.thrust * launchBoost;
+            rocket.vy += Math.sin(rocket.angle - Math.PI / 2) * rocket.thrust * launchBoost;
         }
         return; // Skip physics while landed
     }
@@ -322,7 +387,7 @@ function drawOrbitPath() {
         rocket.vx,
         rocket.vy,
         planets,
-        10000 // steps
+        50000 // steps
     );
 
     if (!path || path.length < 2) return;
@@ -353,7 +418,8 @@ function drawRocket() {
 }
 
 function loop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.setTransform(camera.zoom, 0, 0, camera.zoom, -camera.x * camera.zoom, -camera.y * camera.zoom);
+    ctx.clearRect(camera.x, camera.y, canvas.width / camera.zoom, canvas.height / camera.zoom);
     update();
     drawOrbitPath();
     drawPlanets();

@@ -6,4 +6,9 @@ body {
 
 canvas {
     display: block;
+    cursor: grab;
+}
+
+canvas:active {
+    cursor: grabbing;
 }

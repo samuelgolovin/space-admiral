@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Rocket Simulator with Zoom and Pan</title>
+  <style>
+    canvas {
+      border: 1px solid black;
+      cursor: grab;
+    }
+    canvas:active {
+      cursor: grabbing;
+    }
+  </style>
+</head>
+<body>
+<canvas id="simCanvas" width="800" height="600"></canvas>
+
+<script>
+const canvas = document.getElementById('simCanvas');
+const ctx = canvas.getContext('2d');
+
+let camera = {
+  x: 0,
+  y: 0,
+  zoom: 1
+};
+
+let isDragging = false;
+let lastMouse = { x: 0, y: 0 };
+
+// Handle zooming
+canvas.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const zoomFactor = 1.1;
+  const mouseX = e.offsetX;
+  const mouseY = e.offsetY;
+
+  const worldX = (mouseX / camera.zoom) + camera.x;
+  const worldY = (mouseY / camera.zoom) + camera.y;
+
+  if (e.deltaY < 0) {
+    camera.zoom *= zoomFactor;
+  } else {
+    camera.zoom /= zoomFactor;
+  }
+
+  // Zoom to cursor
+  camera.x = worldX - (mouseX / camera.zoom);
+  camera.y = worldY - (mouseY / camera.zoom);
+});
+
+// Handle panning
+canvas.addEventListener('mousedown', (e) => {
+  isDragging = true;
+  lastMouse = { x: e.clientX, y: e.clientY };
+});
+
+canvas.addEventListener('mousemove', (e) => {
+  if (isDragging) {
+    const dx = (e.clientX - lastMouse.x) / camera.zoom;
+    const dy = (e.clientY - lastMouse.y) / camera.zoom;
+    camera.x -= dx;
+    camera.y -= dy;
+    lastMouse = { x: e.clientX, y: e.clientY };
+  }
+});
+
+canvas.addEventListener('mouseup', () => isDragging = false);
+canvas.addEventListener('mouseleave', () => isDragging = false);
+
+// Draw loop
+function draw() {
+  ctx.setTransform(camera.zoom, 0, 0, camera.zoom, -camera.x * camera.zoom, -camera.y * camera.zoom);
+  ctx.clearRect(camera.x, camera.y, canvas.width / camera.zoom, canvas.height / camera.zoom);
+
+  // Draw a planet
+  ctx.fillStyle = 'blue';
+  ctx.beginPath();
+  ctx.arc(400, 300, 50, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Draw a rocket
+  ctx.fillStyle = 'red';
+  ctx.fillRect(390, 250, 20, 40);
+
+  requestAnimationFrame(draw);
+}
+
+draw();
+</script>
+</body>
+</html>

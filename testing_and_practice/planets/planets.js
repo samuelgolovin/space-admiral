@@ -254,6 +254,7 @@ function checkLanding() {
                     rocket.landed = true;
                     rocket.angle = surfaceAngle + Math.PI / 2; // Align rocket "up" with surface normal
                     const offset = planet.radius + rocket.height / 2;
+                    
                     rocket.x = planet.x + Math.cos(surfaceAngle) * offset;
                     rocket.y = planet.y + Math.sin(surfaceAngle) * offset;
                 } else {
